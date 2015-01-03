@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'south',
     'submit',
 )
 
@@ -53,16 +54,27 @@ ROOT_URLCONF = 'nand2tetris.urls'
 WSGI_APPLICATION = 'nand2tetris.wsgi.application'
 
 
-DATABASES = {
-    'default': {
+if 'RDS_DB_NAME' in os.environ:
+    DATABASES = {
+        'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ['RDS_DB_NAME'],
         'USER': os.environ['RDS_USERNAME'],
         'PASSWORD': os.environ['RDS_PASSWORD'],
         'HOST': os.environ['RDS_HOSTNAME'],
         'PORT': os.environ['RDS_PORT'],
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'submit',
+        'USER': 'root',
+        'PASSWORD': 'abc123',
+        'HOST': 'localhost',
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -86,3 +98,8 @@ STATIC_URL = '/static/'
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
 )
+
+try:
+    from local_settings import *
+except ImportError, e:
+    pass
