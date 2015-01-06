@@ -1,0 +1,9 @@
+{% if personList %}
+    <ul>
+    {% for person in personList %}
+        <li>{{ person.email }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No submissions</p>
+{% endif %}

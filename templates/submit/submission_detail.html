@@ -1,0 +1,10 @@
+<h1>{{ submission.assignment.course }} / {{ submission.assignment.description }}</h1>
+<p>Date of submission: {{ submission.submission_date }}</p>
+<p>Date due: {{ submission.assignment.due_date }}</p>
+File:<br>
+<hr/>
+<pre><code class="language-c">
+ {% for line in lines %}{{ line }}
+ {% endfor  %}
+</code></pre>
+<hr/>
