@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'south',
     'submit',
+    'crispy_forms',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -100,6 +101,8 @@ TEMPLATE_DIRS = (
 )
 
 LOGIN_URL = '/'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 try:
     from local_settings import *

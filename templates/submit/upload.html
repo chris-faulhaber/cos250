@@ -4,18 +4,20 @@
     <p>{{ errors }}</p>
 {% endif %}
 
-<!-- Upload form. Note enctype attribute! -->
-<form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <p>{{ form.assignments }}</p>
-    <p>{{ form.non_field_errors }}</p>
-    <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
-    <p>
-        {{ form.docfile.errors }}
-        {{ form.docfile }}
-    </p>
-    <p><input type="submit" value="Upload"/></p>
-</form>
+    <!-- Upload form. Note enctype attribute! -->
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <h1 align="center">Submit Work</h1>
+            <br>
+            <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% load crispy_forms_tags %}
+                {% crispy form %}
+            </form>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
 
 <!-- List of uploaded documents -->
 {% if form.submissions %}
