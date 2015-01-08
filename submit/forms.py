@@ -1,19 +1,14 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms import forms, ModelChoiceField, CharField
 from django.forms.widgets import *
+from submit.models import Part
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
-from submit.models import Assignment
 
 
 class UploadFileForm(forms.Form):
 
-    docfile = forms.FileField(
-        label='Select a file',
-        help_text='Max size: 1 megabytes'
-    )
-
-    assignments = ModelChoiceField(queryset=Assignment.objects.all())
+    docfile = forms.FileField(label='Select a file', help_text='Max size: 1 megabytes')
 
     def __init__(self, *args, **kwargs):
         super(UploadFileForm, self).__init__(*args, **kwargs)
@@ -23,10 +18,10 @@ class UploadFileForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_action = 'submit'
         self.helper.add_input(Submit('submit', 'Submit'))
-        self.fields['assignments'] = ModelChoiceField(queryset=Assignment.objects.all())
-
+        self.fields['part'] = ModelChoiceField(queryset=Part.objects.all())
 
     #TOOD VALIDATE
+    part = ModelChoiceField(queryset=Part.objects.all())
 
 
 class LoginForm(AuthenticationForm):

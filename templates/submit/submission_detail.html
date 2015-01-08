@@ -1,7 +1,9 @@
-<h1>{{ submission.assignment.course }} / {{ submission.assignment.description }}</h1>
+<h1>{{ submission.part.assignment.description }} / {{ submission.part.name }}</h1>
 <p>Date of submission: {{ submission.submission_date }}</p>
-<p>Date due: {{ submission.assignment.due_date }}</p>
-File:<br>
+<p>Date due: {{ submission.part.due_date }}</p>
+<p>Your results: {{ submission.test_results }}</p>
+<p>Expected results: {{ submission.part.expected_result }}</p>
+File<br>
 <hr/>
 <pre><code class="language-c">
  {% for line in lines %}{{ line }}

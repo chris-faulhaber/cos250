@@ -8,39 +8,50 @@ class Person(models.Model):
         return self.email
 
 
-class Course(models.Model):
-    name = models.CharField(max_length=100)
-    teacher = models.ForeignKey(Person)
-
-    def __unicode__(self):
-        return self.name
-
-
 class Attendee(models.Model):
-    course = models.ForeignKey(Course)
     student = models.ForeignKey(Person)
 
     def __unicode__(self):
-        return self.course.name + "/" + self.student.email
+        return self.student.email
 
 
 class Assignment(models.Model):
     description = models.CharField(max_length=10)
     due_date = models.DateField()
-    course = models.ForeignKey(Course)
 
     def __unicode__(self):
         return self.description
 
 
+class TestRunner(models.Model):
+    script = models.CharField(max_length=1024)
+
+
+class Part(models.Model):
+    assignment = models.ForeignKey(Assignment)
+    name = models.CharField(max_length=1024)
+    tester = models.ForeignKey(TestRunner)
+    test_script = models.CharField(max_length=1024)
+    expected_result = models.CharField(max_length=1024)
+    weight = models.IntegerField()
+
+    def __unicode__(self):
+        return self.name
+
+
 class Submission(models.Model):
     owner = models.ForeignKey(Person)
     submission_date = models.DateTimeField()
-    assignment = models.ForeignKey(Assignment)
+    part = models.ForeignKey(Part)
     test_results = models.CharField(max_length=1024, null=True, blank=True)
 
     def __unicode__(self):
-        return '%s|%s' % (self.owner, self.assignment.description)
+        if self.test_results.rstrip() == self.part.expected_result:
+            result = 'Pass'
+        else:
+            result = 'Please try again, %s' % self.test_results
+
+        return '%s|%s|%s' % (self.owner.email, self.part.name, result)
 
 
 class Line(models.Model):

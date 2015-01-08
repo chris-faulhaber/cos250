@@ -72,7 +72,7 @@ else:
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'submit',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'abc123',
         'HOST': 'localhost',
         }
     }
@@ -103,6 +103,8 @@ TEMPLATE_DIRS = (
 LOGIN_URL = '/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+RESOURCES_DIR = os.path.join(BASE_DIR,  'resources')
 
 try:
     from local_settings import *

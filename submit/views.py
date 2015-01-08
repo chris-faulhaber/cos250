@@ -1,15 +1,19 @@
 from datetime import datetime
-import os, subprocess
-from django.contrib.auth import login, logout
+import os
+import subprocess
+from django.contrib.auth import logout, login
 from django.shortcuts import render, render_to_response, redirect
 from django.views import generic
 from django.views.generic import View
-from models import Person, Submission, Line, Assignment, Attendee
+from models import Person, Submission, Line, Assignment, Attendee, Part
 from django.template import RequestContext
 from forms import UploadFileForm, LoginForm
 
 
 # Create your views here.
+from nand2tetris import settings
+
+
 class SubmissionListView(generic.ListView):
     template_name = 'submit/submission_list.html'
     model = Submission
@@ -57,12 +61,12 @@ def upload(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            assignment = Assignment.objects.get(pk=request.POST['assignments'])
+            part = Part.objects.get(pk=request.POST['part'])
 
             submit = Submission()
             submit.owner = user  # TODO until we setup security...
             submit.submission_date = datetime.now()
-            submit.assignment = assignment
+            submit.part = part
 
             uploaded_file = request.FILES['docfile']
             content = uploaded_file.readlines()
@@ -71,17 +75,17 @@ def upload(request):
             if len(content) > 1000:
                 pass
 
-            # piped_file = ''.join(content)
-            cmd = ['java',
-                   '-classpath "${CLASSPATH}:bin/classes:BuiltIn:bin/lib/Hack.jar:bin/lib/HackGUI.jar:bin/lib/Simulators.jar:bin/lib/SimulatorsGUI.jar:bin/lib/Compilers.jar" HardwareSimulatorMain "And.tst"']
+            script = os.path.join(settings.RESOURCES_DIR, part.tester.script)
+            test = os.path.join(settings.RESOURCES_DIR, part.test_script)
+            cmd = [script, test]
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            outstd = process.stdout.read()
-            print outstd
+            stdout = process.stdout.read()
+            print stdout
 
-            outerr = process.stderr.read()
-            print outerr
+            stderr = process.stderr.read()
+            print stderr
 
-            submit.test_results = outstd or outerr
+            submit.test_results = stdout or stderr
             submit.save()
 
             count = 0
@@ -99,9 +103,6 @@ def upload(request):
                 {'form': form},
                 context_instance=RequestContext(request)
             )
-
-    enrolled = Attendee.objects.filter(student=user)
-    form.fields['assignments'].queryset = Assignment.objects.filter(course__in=enrolled)
 
     form.submissions = Submission.objects.filter(owner=user).order_by('-submission_date')[:5]
 

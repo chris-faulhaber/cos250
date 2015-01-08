@@ -1,8 +1,13 @@
-{% extends 'submit/includes/base.html' %}
-{% block content %}
-{% if errors %}
-    <p>{{ errors }}</p>
-{% endif %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Submit</title>
+    </head>
+    <body>
+    {% if errors %}
+        <p>{{ errors }}</p>
+    {% endif %}
 
     <!-- Upload form. Note enctype attribute! -->
     <div class="row">
@@ -19,17 +24,17 @@
         <div class="col-md-4"></div>
     </div>
 
-<!-- List of uploaded documents -->
-{% if form.submissions %}
-    <ul>
+    <!-- List of uploaded documents -->
+    {% if form.submissions %}
+        <ul>
         <p>Recent submissions</p>
         {% for submit in form.submissions %}
-            <li>
-                <a href="{% url 'submission' submit.id %}">{{ submit.assignment.course }}/{{ submit.assignment.description }}/{{ submit.submission_date }}</a>
-            </li>
+            <li><a href="{% url 'submission' submit.id %}">{{ submit.assignment.course }}/{{ submit.assignment.description }}/{{ submit.submission_date }}</a></li>
         {% endfor %}
-    </ul>
-{% else %}
-    <p>No submissions found.</p>
-{% endif %}
-{% endblock %}
+        </ul>
+    {% else %}
+        <p>No submissions found.</p>
+    {% endif %}
+
+    </body>
+</html>
