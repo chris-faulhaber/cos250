@@ -1,0 +1,21 @@
+{
+  "name": "syntropy",
+  "version": "0.0.1",
+  "authors": [
+    "Chris Faulhaber <cfaulhaber@cashstar.com>",
+    "Graham Bartlett <gbartlett@cashstar.com>"
+  ],
+  "description": "Assignment Submission Tool",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "submit/static/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.1"
+  }
+}

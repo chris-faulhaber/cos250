@@ -125,7 +125,11 @@ class LoginView(View):
 
     def post(self, request):
         if request.method == 'POST':
-            form = LoginForm(data=request.POST)
+            data = {
+                'username': request.POST['username'],
+                'password': request.POST['password']
+            }
+            form = LoginForm(data=data)
             if form.is_valid():
                 login(request, form.get_user())
                 # Success
