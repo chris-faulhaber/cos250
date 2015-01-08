@@ -1,12 +1,14 @@
 from django.conf.urls import patterns, include, url
 
 from django.contrib import admin
-from submit.views import SubmissionDetailView, SubmissionListView
+from submit.views import SubmissionDetailView, SubmissionListView, LoginView
 
 admin.autodiscover()
 
 urlpatterns = patterns(
     '',
+    url(r'^$', LoginView.as_view(), name='login'),
+    url(r'^logout/', 'submit.views.logout_view', name='logout'),
     url(r'^submit/', 'submit.views.index', name='index'),
     url(r'^submissions/', SubmissionListView.as_view(), name='submitted'),
     url(r'^submission/(?P<pk>[-_\w]+)/$', SubmissionDetailView.as_view(), name='submission'),

@@ -1,0 +1,8 @@
+{% block login %}
+    <form action="/" method="post">{% csrf_token %}
+        {% for field in auth_form %}
+        {{ field }}
+        {% endfor %}
+        <input type="submit" id="btnLogIn" value="Log In">
+    </form>
+{% endblock %}

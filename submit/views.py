@@ -1,10 +1,12 @@
 from datetime import datetime
 import os, subprocess
-from django.shortcuts import render, render_to_response
+from django.contrib.auth import login, logout
+from django.shortcuts import render, render_to_response, redirect
 from django.views import generic
+from django.views.generic import View
 from models import Person, Submission, Line, Assignment, Attendee
 from django.template import RequestContext
-from forms import UploadFileForm
+from forms import UploadFileForm, LoginForm
 
 
 # Create your views here.
@@ -109,3 +111,31 @@ def upload(request):
         {'form': form},
         context_instance=RequestContext(request)
     )
+
+
+class LoginView(View):
+    template = 'submit/home.html'
+
+    def get(self, request):
+        if request.user.is_authenticated():
+            return upload(request)
+        form = LoginForm()
+        context = RequestContext(request, {'auth_form': form})
+        return render(request, self.template, context)
+
+    def post(self, request):
+        if request.method == 'POST':
+            form = LoginForm(data=request.POST)
+            if form.is_valid():
+                login(request, form.get_user())
+                # Success
+                return redirect('/upload')
+            else:
+                # Failure
+                return redirect('/')
+        return redirect('/')
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')

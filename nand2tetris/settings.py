@@ -71,7 +71,7 @@ else:
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'submit',
         'USER': 'root',
-        'PASSWORD': 'abc123',
+        'PASSWORD': '',
         'HOST': 'localhost',
         }
     }
@@ -98,6 +98,8 @@ STATIC_URL = '/static/'
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
 )
+
+LOGIN_URL = '/'
 
 try:
     from local_settings import *

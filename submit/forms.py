@@ -1,4 +1,6 @@
-from django.forms import forms, ModelChoiceField
+from django.contrib.auth.forms import AuthenticationForm
+from django.forms import forms, ModelChoiceField, CharField
+from django.forms.widgets import *
 from submit.models import Assignment
 
 
@@ -10,3 +12,8 @@ class UploadFileForm(forms.Form):
 
     assignments = ModelChoiceField(queryset=Assignment.objects.all())
     #TOOD VALIDATE
+
+
+class LoginForm(AuthenticationForm):
+    username = CharField(widget=TextInput(attrs={'placeholder': 'Username'}))
+    password = CharField(widget=PasswordInput(attrs={'placeholder': 'Password'}))
