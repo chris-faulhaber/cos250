@@ -1,12 +1,19 @@
 <h1>{{ submission.part.assignment.description }} / {{ submission.part.name }}</h1>
 <p>Date of submission: {{ submission.submission_date }}</p>
-<p>Date due: {{ submission.part.due_date }}</p>
-<p>Your results: {{ submission.test_results }}</p>
-<p>Expected results: {{ submission.part.expected_result }}</p>
-File<br>
+<p>Date of due: {{ submission.part.assignment.due_date }}</p>
+
+<p>Points: {{ submission.awarded_points }} of {{ submission.part.weight }}</p>
+<p>Your results: <br>
+    {{ submission.test_results }}</p>
+<p>Expected results: <br>
+    {{ submission.part.expected_result }}</p>
+Input<br>
 <hr/>
 <pre><code class="language-c">
- {% for line in lines %}{{ line }}
- {% endfor  %}
+{% for line in lines %}{{ line }}
+{% endfor  %}
 </code></pre>
+Output
+<hr/>
+<pre><code class="language-c">{{ submission.output }}</code></pre>
 <hr/>

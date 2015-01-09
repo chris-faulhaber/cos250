@@ -1,24 +1,26 @@
 from datetime import datetime
 import os
 import subprocess
+import uuid
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.forms import model_to_dict
+from django.forms import model_to_dict, ModelChoiceField
 from django.shortcuts import render, render_to_response, redirect
-from django.views import generic
 from django.views.generic import View
-from models import Person, Submission, Line, Assignment, Attendee, Part
+import shutil
+from models import Submission, Assignment, Line, Part
 from django.template import RequestContext
 from forms import UploadFileForm, LoginForm
 from django.views import generic
 from nand2tetris import settings
 
 
-def get_completed_parts(parts, person):
+def get_completed_parts(parts, user):
     completed_parts = []
     for part in parts:
-            if part.submission_set.all().filter(owner=person).exists():
+            if part.submission_set.all().filter(owner=user).exists():
                 completed_parts.append(part)
     return completed_parts
 
@@ -27,21 +29,29 @@ class AssignmentDetailView(generic.DetailView):
     model = Assignment
 
     def get_context_data(self, **kwargs):
-        person, v = Person.objects.get_or_create(email=self.request.user.email)
+        user = self.request.user
         context = super(AssignmentDetailView, self).get_context_data(**kwargs)
         upload_form = UploadFileForm
-        parts = [part for part in self.object.part_set.all()]
-        completed_parts = get_completed_parts(parts, person)
+        parts = [part for part in Part.objects.filter(assignment=self.object)]
+        completed_parts = get_completed_parts(parts, user)
         incomplete_parts = [part for part in parts if part not in completed_parts]
 
         context['form'] = upload_form
         context['completed_parts'] = [model_to_dict(part) for part in completed_parts]
         for part in context['completed_parts']:
-            submission = Submission.objects.get(part=part['id'])
-            part['submission'] = submission.id
+            submission = Submission.objects.filter(part=part['id'], owner=user).order_by('-awarded_points')[0]
+            part['submission'] = model_to_dict(submission)
 
         context['incomplete_parts'] = [model_to_dict(part) for part in incomplete_parts]
+
+        upload_form.base_fields['part'].queryset = Part.objects.filter(assignment=self.object)
+
         return context
+
+    #todo do we need?
+    # @method_decorator(login_required)
+    # def dispatch(self, *args, **kwargs):
+    #     return super(AssignmentDetailView, self).dispatch(*args, **kwargs)
 
 
 class AssignmentListView(generic.ListView):
@@ -57,7 +67,7 @@ class SubmissionListView(generic.ListView):
         return context
 
     def get_queryset(self):
-        user = Person.objects.first()  # TODO until we setup security...
+        user = User.objects.first()  # TODO until we setup security...
         return Submission.objects.filter(owner=user).order_by('submission_date')
 
 
@@ -72,21 +82,60 @@ class SubmissionDetailView(generic.DetailView):
         return context
 
     def get_queryset(self):
-        user = Person.objects.first()  # TODO until we setup security...
+        user = User.objects.first()  # TODO until we setup security...
         return Submission.objects.filter(owner=user)
 
 @login_required
 def index(request):
-    person_list = Person.objects.all()
+    person_list = User.objects.all()
     context = RequestContext(request, {
         'personList': person_list
     })
 
     return render(request, 'submit/index.html', context)
 
+
+def _submit_part(part, content):
+    temp_dir = '/tmp/{0}'.format(uuid.uuid4().hex)
+    script = os.path.join(settings.RESOURCES_DIR, part.tester.script)
+    test = os.path.join(settings.RESOURCES_DIR, part.test_script)
+    test_dest = os.path.join(temp_dir, test.split('/')[-1])
+
+    #create tmp dir and build content
+    os.mkdir(temp_dir)
+    shutil.copyfile(test, test_dest)
+
+    #copy extras
+    for extra in part.extra_files.split(','):
+        extra = os.path.join(settings.RESOURCES_DIR, extra)
+        shutil.copyfile(extra, temp_dir + '/' + extra.split('/')[-1])
+
+    #save inbound file
+    destination = open('%s/%s' % (temp_dir, part.submit_filename), 'w')
+    for line in content:
+        destination.write(line)
+
+    destination.close()
+
+    cmd = [script, test_dest]
+    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=temp_dir)
+    stdout = process.stdout.read()
+    stderr = process.stderr.read()
+
+    #retreive output
+    if part.output_file:
+        source = open('%s/%s' % (temp_dir, part.output_file), 'r')
+        output = source.read()
+
+    shutil.rmtree(temp_dir)
+    results = stdout or stderr or 'No OUTPUT'
+    results = results.rstrip()
+
+    return results, output
+
+
 @login_required
 def upload(request):
-    user = Person.objects.first()  # TODO until we setup security...
 
     # by default we display the form.
     form = UploadFileForm()  # A empty, unbound form
@@ -98,7 +147,7 @@ def upload(request):
             part = Part.objects.get(pk=request.POST['part'])
 
             submit = Submission()
-            submit.owner = user  # TODO until we setup security...
+            submit.owner = request.user
             submit.submission_date = datetime.now()
             submit.part = part
 
@@ -109,36 +158,31 @@ def upload(request):
             if len(content) > 1000:
                 pass
 
-            script = os.path.join(settings.RESOURCES_DIR, part.tester.script)
-            test = os.path.join(settings.RESOURCES_DIR, part.test_script)
-            cmd = [script, test]
-            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout = process.stdout.read()
-            print stdout
+            submit.test_results, submit.output = _submit_part(part, content)
+            if submit.test_results == submit.part.expected_result:
+                submit.awarded_points = submit.part.weight
+            else:
+                submit.awarded_points = 0
 
-            stderr = process.stderr.read()
-            print stderr
-
-            submit.test_results = stdout or stderr
             submit.save()
 
-            count = 0
-            for one_line in content:
-                line = Line()
-                line.line_number = count
-                stripped = one_line.rstrip()
-                line.line = stripped
-                line.submission = submit
-                line.save()
-                count += 1
+        count = 0
+        for one_line in content:
+            line = Line()
+            line.line_number = count
+            stripped = one_line.rstrip()
+            line.line = stripped
+            line.submission = submit
+            line.save()
+            count += 1
 
-            return render_to_response(
-                'submit/success.html',
-                {'form': form},
-                context_instance=RequestContext(request)
-            )
+        return render_to_response(
+            'submit/success.html',
+            {'form': form},
+            context_instance=RequestContext(request)
+        )
 
-    form.submissions = Submission.objects.filter(owner=user).order_by('-submission_date')[:5]
+    form.submissions = Submission.objects.filter(owner=request.user).order_by('-submission_date')[:5]
 
     # Render list page with the documents and the form
     return render_to_response(

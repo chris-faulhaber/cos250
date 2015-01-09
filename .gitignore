@@ -1,3 +1,4 @@
 .elasticbeanstalk/
 .idea
 submit/static/bower_components
+local_settings.py

@@ -1,18 +1,5 @@
+from django.contrib.auth.models import User
 from django.db import models
-
-
-class Person(models.Model):
-    email = models.EmailField()
-
-    def __unicode__(self):
-        return self.email
-
-
-class Attendee(models.Model):
-    student = models.ForeignKey(Person)
-
-    def __unicode__(self):
-        return self.student.email
 
 
 class Assignment(models.Model):
@@ -32,6 +19,9 @@ class Part(models.Model):
     name = models.CharField(max_length=1024)
     tester = models.ForeignKey(TestRunner)
     test_script = models.CharField(max_length=1024)
+    extra_files = models.CharField(max_length=1024)
+    submit_filename = models.CharField(max_length=1024)
+    output_file = models.CharField(max_length=1024)
     expected_result = models.CharField(max_length=1024)
     weight = models.IntegerField()
 
@@ -40,10 +30,12 @@ class Part(models.Model):
 
 
 class Submission(models.Model):
-    owner = models.ForeignKey(Person)
+    owner = models.ForeignKey(User)
     submission_date = models.DateTimeField()
     part = models.ForeignKey(Part)
     test_results = models.CharField(max_length=1024, null=True, blank=True)
+    awarded_points = models.IntegerField()
+    output = models.CharField(max_length=4096)
 
     def __unicode__(self):
         if self.test_results.rstrip() == self.part.expected_result:
@@ -51,7 +43,7 @@ class Submission(models.Model):
         else:
             result = 'Please try again, %s' % self.test_results
 
-        return '%s|%s|%s' % (self.owner.email, self.part.name, result)
+        return '%s|%s|%s' % (self.owner.username, self.part.name, result)
 
 
 class Line(models.Model):

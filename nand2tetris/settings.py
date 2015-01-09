@@ -20,11 +20,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '#9so#9v$eb5^f0_#drlwdarg$3lkquzxwia=1pek$((bf1%^34'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '104.131.109.166']
 
 
 # Application definition
@@ -55,27 +55,13 @@ ROOT_URLCONF = 'nand2tetris.urls'
 WSGI_APPLICATION = 'nand2tetris.wsgi.application'
 
 
-if 'RDS_DB_NAME' in os.environ:
-    DATABASES = {
-        'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ['RDS_DB_NAME'],
-        'USER': os.environ['RDS_USERNAME'],
-        'PASSWORD': os.environ['RDS_PASSWORD'],
-        'HOST': os.environ['RDS_HOSTNAME'],
-        'PORT': os.environ['RDS_PORT'],
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'submit',
-        'USER': 'root',
-        'PASSWORD': 'abc123',
-        'HOST': 'localhost',
-        }
-    }
+DATABASES = {
+    'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    'NAME': 'django',
+    'USER': 'django',
+    'PASSWORD': 'jRHzZ36Pye',
+    'HOST': ''
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -95,6 +81,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '/home/django/django/static/'
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),

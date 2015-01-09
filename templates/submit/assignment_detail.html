@@ -18,22 +18,22 @@
     <!-- Upload form. Note enctype attribute! -->
     <div class="row">
         <div class="col-md-8">
-            <h1>Completed Parts</h1>
+            <h1>Submitted Parts</h1>
             <ul class="list-group">
                 {% if completed_parts %}
                     {% for part in completed_parts %}
 
                         <li class="list-group-item" style="width: 50%">
-                            <a href="{% url 'submission' part.submission %}">
+                            <a href="{% url 'submission' part.submission.id %}">
                                 {{ part.name }}
-                            </a>
+                            </a> {{ part.submission.awarded_points }} of {{ part.weight }}
                         </li>
                     {% endfor %}
                 {% else %}
                     You have not completed any of the assignment!
                 {% endif %}
             </ul>
-            <h1>Incomplete Parts</h1>
+            <h1>Parts TODO</h1>
             {% if incomplete_parts %}
                 <ul class="list-group">
                     {% for part in incomplete_parts %}
@@ -58,18 +58,4 @@
             </form>
         </div>
     </div>
-
-    <!-- List of uploaded documents -->
-    {% if form.submissions %}
-        <ul>
-            <p>Recent submissions</p>
-            {% for submit in form.submissions %}
-                <li>
-                    <a href="{% url 'submission' submit.id %}">{{ submit.assignment.course }}/{{ submit.assignment.description }}/{{ submit.submission_date }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No submissions found.</p>
-    {% endif %}
 {% endblock %}

@@ -9,6 +9,8 @@ from crispy_forms.layout import Submit
 class UploadFileForm(forms.Form):
 
     docfile = forms.FileField(label='Select a file', help_text='Max size: 1 megabytes')
+    #TOOD VALIDATE
+    part = ModelChoiceField(queryset=Part.objects.all())
 
     def __init__(self, *args, **kwargs):
         super(UploadFileForm, self).__init__(*args, **kwargs)
@@ -18,10 +20,6 @@ class UploadFileForm(forms.Form):
         self.helper.form_method = 'post'
         self.helper.form_action = 'submit'
         self.helper.add_input(Submit('submit', 'Submit'))
-        self.fields['part'] = ModelChoiceField(queryset=Part.objects.all())
-
-    #TOOD VALIDATE
-    part = ModelChoiceField(queryset=Part.objects.all())
 
 
 class LoginForm(AuthenticationForm):
