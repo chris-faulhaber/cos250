@@ -15,15 +15,32 @@ from django.views import generic
 from nand2tetris import settings
 
 
+def get_completed_parts(parts, person):
+    completed_parts = []
+    for part in parts:
+            if part.submission_set.all().filter(owner=person).exists():
+                completed_parts.append(part)
+    return completed_parts
+
+
 class AssignmentDetailView(generic.DetailView):
     model = Assignment
 
     def get_context_data(self, **kwargs):
+        person, v = Person.objects.get_or_create(email=self.request.user.email)
         context = super(AssignmentDetailView, self).get_context_data(**kwargs)
         upload_form = UploadFileForm
-        parts = [model_to_dict(part) for part in self.object.part_set.all()]
+        parts = [part for part in self.object.part_set.all()]
+        completed_parts = get_completed_parts(parts, person)
+        incomplete_parts = [part for part in parts if part not in completed_parts]
+
         context['form'] = upload_form
-        context['parts'] = parts
+        context['completed_parts'] = [model_to_dict(part) for part in completed_parts]
+        for part in context['completed_parts']:
+            submission = Submission.objects.get(part=part['id'])
+            part['submission'] = submission.id
+
+        context['incomplete_parts'] = [model_to_dict(part) for part in incomplete_parts]
         return context
 
 
