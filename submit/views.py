@@ -3,6 +3,7 @@ import os
 import subprocess
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
 from django.forms import model_to_dict
 from django.shortcuts import render, render_to_response, redirect
 from django.views import generic
@@ -10,11 +11,11 @@ from django.views.generic import View
 from models import Person, Submission, Line, Assignment, Attendee, Part
 from django.template import RequestContext
 from forms import UploadFileForm, LoginForm
-from django.views.generic import DetailView
+from django.views import generic
 from nand2tetris import settings
 
 
-class AssignmentDetailView(DetailView):
+class AssignmentDetailView(generic.DetailView):
     model = Assignment
 
     def get_context_data(self, **kwargs):
@@ -24,6 +25,10 @@ class AssignmentDetailView(DetailView):
         context['form'] = upload_form
         context['parts'] = parts
         return context
+
+
+class AssignmentListView(generic.ListView):
+    model = Assignment
 
 
 class SubmissionListView(generic.ListView):
@@ -146,7 +151,7 @@ class LoginView(View):
             if form.is_valid():
                 login(request, form.get_user())
                 # Success
-                return redirect('/upload')
+                return redirect(reverse('assignment_list'))
             else:
                 # Failure
                 return redirect('/')
