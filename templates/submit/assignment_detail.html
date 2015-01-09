@@ -1,0 +1,55 @@
+{% extends 'submit/includes/base.html' %}
+{% block content %}
+<body>
+{% if errors %}
+    <p>{{ errors }}</p>
+{% endif %}
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                    aria-hidden="true">&times;</span></button>
+            <strong>{{ message }}</strong>
+        </div>
+    {% endfor %}
+</ul>
+{% endif %}
+<!-- Upload form. Note enctype attribute! -->
+<div class="row">
+    <div class="col-md-8">
+        <h1>Parts</h1>
+        <ul class="list-group">
+        {% if parts %}
+            {% for part in parts %}
+            <li class="list-group-item">{{ part.name }}</li>
+            {% endfor %}
+        {% endif %}
+        </ul>
+    </div>
+    <div class="col-md-4">
+        <h1 align="center">{{ object.description }}</h1>
+        <br>
+
+        <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% load crispy_forms_tags %}
+            {% crispy form %}
+        </form>
+    </div>
+</div>
+
+<!-- List of uploaded documents -->
+{% if form.submissions %}
+    <ul>
+        <p>Recent submissions</p>
+        {% for submit in form.submissions %}
+            <li>
+                <a href="{% url 'submission' submit.id %}">{{ submit.assignment.course }}/{{ submit.assignment.description }}/{{ submit.submission_date }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No submissions found.</p>
+{% endif %}
+{% endblock %}

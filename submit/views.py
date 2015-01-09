@@ -3,16 +3,27 @@ import os
 import subprocess
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
+from django.forms import model_to_dict
 from django.shortcuts import render, render_to_response, redirect
 from django.views import generic
 from django.views.generic import View
 from models import Person, Submission, Line, Assignment, Attendee, Part
 from django.template import RequestContext
 from forms import UploadFileForm, LoginForm
-
-
-# Create your views here.
+from django.views.generic import DetailView
 from nand2tetris import settings
+
+
+class AssignmentDetailView(DetailView):
+    model = Assignment
+
+    def get_context_data(self, **kwargs):
+        context = super(AssignmentDetailView, self).get_context_data(**kwargs)
+        upload_form = UploadFileForm
+        parts = [model_to_dict(part) for part in self.object.part_set.all()]
+        context['form'] = upload_form
+        context['parts'] = parts
+        return context
 
 
 class SubmissionListView(generic.ListView):
