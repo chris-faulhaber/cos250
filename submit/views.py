@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 import subprocess
 from django.contrib.auth import logout, login
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, render_to_response, redirect
 from django.views import generic
 from django.views.generic import View
@@ -41,7 +42,7 @@ class SubmissionDetailView(generic.DetailView):
         user = Person.objects.first()  # TODO until we setup security...
         return Submission.objects.filter(owner=user)
 
-
+@login_required
 def index(request):
     person_list = Person.objects.all()
     context = RequestContext(request, {
@@ -50,7 +51,7 @@ def index(request):
 
     return render(request, 'submit/index.html', context)
 
-
+@login_required
 def upload(request):
     user = Person.objects.first()  # TODO until we setup security...
 
@@ -140,7 +141,7 @@ class LoginView(View):
                 return redirect('/')
         return redirect('/')
 
-
+@login_required
 def logout_view(request):
     logout(request)
     return redirect('/')
