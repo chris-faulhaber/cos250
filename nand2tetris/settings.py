@@ -56,11 +56,13 @@ WSGI_APPLICATION = 'nand2tetris.wsgi.application'
 
 
 DATABASES = {
-    'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'NAME': 'django',
-    'USER': 'django',
-    'PASSWORD': 'jRHzZ36Pye',
-    'HOST': ''
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django',
+        'USER': 'django',
+        'PASSWORD': 'jRHzZ36Pye',
+        'HOST': '',
+    }
 }
 
 # Internationalization
