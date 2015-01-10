@@ -2,16 +2,17 @@ from datetime import datetime
 import os
 import subprocess
 import uuid
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.forms import model_to_dict, ModelChoiceField
-from django.http import HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect
-from django.views.generic import View
+from django.views.generic import View, ListView
 import shutil
-from models import Submission, Assignment, Line, Part
+from models import Submission, Assignment, Line, Part, AssignmentGrade
 from django.template import RequestContext
 from forms import UploadFileForm, LoginForm
 from django.views import generic
@@ -227,3 +228,26 @@ class LoginView(View):
 def logout_view(request):
     logout(request)
     return redirect('/')
+
+
+class StudentListView(generic.ListView):
+    model = User
+    template_name = 'submit/user_list.html'
+    queryset = User.objects.filter(is_staff=False)
+
+
+class StudentGradeView(generic.View):
+    template_name = 'submit/grade_view.html'
+
+    def get(self, request, pk):
+        user = User.objects.get(id=pk)
+        assignments = Assignment.objects.all()
+        grades = []
+        for assignment in assignments:
+            for assignment_grade in assignment.assignmentgrade_set.filter(user=user):
+                grade, part_grades = assignment_grade.get_grade()
+                grade_dict = {'grade': grade, 'assignment': assignment.description, 'parts': part_grades}
+                grades.append(grade_dict)
+
+        context = RequestContext(request, {'grades': grades, 'student': model_to_dict(user)})
+        return HttpResponse(render(request, self.template_name, context))

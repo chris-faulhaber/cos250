@@ -1,0 +1,26 @@
+{% extends 'submit/includes/base.html' %}
+{% block content %}
+    <div class="row">
+        <h1 align="center">Grades</h1>
+        <h2 align="center">{{ student.first_name }} {{ student.last_name }}</h2>
+        <br>
+        {% for grade in grades %}
+            <h1>{{ grade.assignment }}: {{ grade.grade }}%</h1>
+            <br>
+            <br>
+            <table class="table table-bordered">
+                <tr>
+                    {% for part in grade.parts %}
+                        <td class="info">{{ part.name }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    {% for part in grade.parts %}
+                        <td>{{ part.score }}</td>
+                    {% endfor %}
+                </tr>
+            </table>
+            <br>
+        {% endfor %}
+    </div>
+{% endblock %}

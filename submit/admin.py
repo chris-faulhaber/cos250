@@ -1,5 +1,6 @@
 from django.contrib import admin
-from submit.models import Submission, Line, Assignment, TestRunner, Part
+from django.contrib.auth.models import User
+from submit.models import Submission, Line, Assignment, TestRunner, Part, PartGrade
 
 # Register your models here.
 admin.site.register(Submission)
