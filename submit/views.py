@@ -167,15 +167,15 @@ def upload(request):
 
             submit.save()
 
-        count = 0
-        for one_line in content:
-            line = Line()
-            line.line_number = count
-            stripped = one_line.rstrip()
-            line.line = stripped
-            line.submission = submit
-            line.save()
-            count += 1
+            count = 0
+            for one_line in content:
+                line = Line()
+                line.line_number = count
+                stripped = one_line.rstrip()
+                line.line = stripped
+                line.submission = submit
+                line.save()
+                count += 1
 
         return render_to_response(
             'submit/success.html',
