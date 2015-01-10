@@ -124,16 +124,23 @@ def _submit_part(part, content):
 
     cmd = [script, test_dest]
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=temp_dir)
+
+    while process.returncode is None:
+        process.communicate()
+
     stdout = process.stdout.read()
     stderr = process.stderr.read()
 
     #retreive output
     if part.output_file:
-        source = open('%s/%s' % (temp_dir, part.output_file), 'r')
-        output = source.read()
+        try:
+            source = open('%s/%s' % (temp_dir, part.output_file), 'r')
+            output = source.read()
+        except Exception:
+            return stderr, ''
 
     shutil.rmtree(temp_dir)
-    results = stdout or stderr or 'No OUTPUT'
+    results = stderr or stdout or 'No OUTPUT'
     results = results.rstrip()
 
     return results, output

@@ -22,7 +22,7 @@ class UploadFileForm(forms.Form):
         self.helper.add_input(Submit('submit', 'Submit'))
 
     def is_valid(self):
-        docfile = self.cleaned_data['docfile']
+        docfile = self.files['docfile']
 
         if docfile.size > 10000:
             raise forms.ValidationError('File too large.')
