@@ -24,6 +24,7 @@ class Part(models.Model):
     output_file = models.CharField(max_length=1024)
     expected_result = models.CharField(max_length=1024)
     weight = models.IntegerField()
+    order = models.IntegerField()
 
     def __unicode__(self):
         return self.name

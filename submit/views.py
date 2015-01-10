@@ -32,7 +32,7 @@ class AssignmentDetailView(generic.DetailView):
         user = self.request.user
         context = super(AssignmentDetailView, self).get_context_data(**kwargs)
         upload_form = UploadFileForm
-        parts = [part for part in Part.objects.filter(assignment=self.object)]
+        parts = [part for part in Part.objects.filter(assignment=self.object).order_by('order')]
         all_points = [part.weight for part in parts]
         total_points_possible = sum(all_points)
         completed_parts = get_completed_parts(parts, user)
@@ -49,7 +49,7 @@ class AssignmentDetailView(generic.DetailView):
         context['incomplete_parts'] = [model_to_dict(part) for part in incomplete_parts]
         current_assignment_score = int((sum(submission_points_list)/float(total_points_possible)) * 100)
         context['current_assignment_score'] = current_assignment_score
-        upload_form.base_fields['part'].queryset = Part.objects.filter(assignment=self.object)
+        upload_form.base_fields['part'].queryset = Part.objects.filter(assignment=self.object).order_by('order')
 
         return context
 
