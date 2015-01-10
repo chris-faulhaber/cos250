@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.forms import model_to_dict, ModelChoiceField
-from django.http import Http404
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect
 from django.views.generic import View
 import shutil
@@ -183,11 +183,9 @@ def upload(request):
                 line.save()
                 count += 1
 
-        return render_to_response(
-            'submit/success.html',
-            {'form': form},
-            context_instance=RequestContext(request)
-        )
+            return HttpResponseRedirect(
+                reverse('submission', args=(submit.id,))
+            )
 
     form.submissions = Submission.objects.filter(owner=request.user).order_by('-submission_date')[:5]
 
