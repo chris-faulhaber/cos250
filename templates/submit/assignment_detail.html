@@ -49,6 +49,7 @@
         </div>
         <div class="col-md-4">
             <h1 align="center">{{ object.description }}</h1>
+            <h2>Current Score: {{ current_assignment_score }}%</h2>
             <br>
 
             <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
