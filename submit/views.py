@@ -87,8 +87,7 @@ class SubmissionDetailView(generic.DetailView):
         return context
 
     def get_queryset(self):
-        user = User.objects.filter(owner=self.request.user)
-        return Submission.objects.filter(owner=user)
+        return Submission.objects.filter(owner=self.request.user)
 
 @login_required
 def index(request):
@@ -125,11 +124,11 @@ def _submit_part(part, content):
     cmd = [script, test_dest]
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=temp_dir)
 
-    while process.returncode is None:
-        process.communicate()
-
     stdout = process.stdout.read()
     stderr = process.stderr.read()
+
+    while process.returncode is None:
+        process.communicate()
 
     #retreive output
     if part.output_file:
