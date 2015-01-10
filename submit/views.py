@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.forms import model_to_dict, ModelChoiceField
+from django.http import Http404
 from django.shortcuts import render, render_to_response, redirect
 from django.views.generic import View
 import shutil
@@ -72,8 +73,7 @@ class SubmissionListView(generic.ListView):
         return context
 
     def get_queryset(self):
-        user = User.objects.first()  # TODO until we setup security...
-        return Submission.objects.filter(owner=user).order_by('submission_date')
+        return Submission.objects.filter(owner=self.request.user).order_by('submission_date')
 
 
 # Create your views here.
@@ -87,7 +87,7 @@ class SubmissionDetailView(generic.DetailView):
         return context
 
     def get_queryset(self):
-        user = User.objects.first()  # TODO until we setup security...
+        user = User.objects.filter(owner=self.request.user)
         return Submission.objects.filter(owner=user)
 
 @login_required
@@ -158,10 +158,6 @@ def upload(request):
 
             uploaded_file = request.FILES['docfile']
             content = uploaded_file.readlines()
-
-            #TODO limit the size of file!
-            if len(content) > 1000:
-                pass
 
             submit.test_results, submit.output = _submit_part(part, content)
             if submit.test_results == submit.part.expected_result:

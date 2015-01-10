@@ -21,6 +21,14 @@ class UploadFileForm(forms.Form):
         self.helper.form_action = 'submit'
         self.helper.add_input(Submit('submit', 'Submit'))
 
+    def is_valid(self):
+        docfile = self.cleaned_data['docfile']
+
+        if docfile.size > 10000:
+            raise forms.ValidationError('File too large.')
+
+        return True & super(UploadFileForm, self).is_valid()
+
 
 class LoginForm(AuthenticationForm):
     username = CharField(widget=TextInput(attrs={'placeholder': 'Username'}))

@@ -42,6 +42,11 @@ class Migration(SchemaMigration):
                       self.gf('django.db.models.fields.CharField')(default='', max_length=1024),
                       keep_default=False)
 
+        # Adding field 'Part.order'
+        db.add_column(u'submit_part', 'order',
+                      self.gf('django.db.models.fields.IntegerField')(default=0),
+                      keep_default=False)
+
 
     def backwards(self, orm):
         # Adding model 'Attendee'
@@ -75,6 +80,9 @@ class Migration(SchemaMigration):
 
         # Deleting field 'Part.output_file'
         db.delete_column(u'submit_part', 'output_file')
+
+        # Deleting field 'Part.order'
+        db.delete_column(u'submit_part', 'order')
 
 
     models = {
@@ -134,6 +142,7 @@ class Migration(SchemaMigration):
             'extra_files': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
+            'order': ('django.db.models.fields.IntegerField', [], {}),
             'output_file': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
             'submit_filename': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
             'test_script': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),

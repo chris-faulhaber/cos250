@@ -25,18 +25,7 @@ class Migration(DataMigration):
             output_file='And.out',
             expected_result='End of script - Comparison ended successfully',
             weight=10,
-        )
-
-        orm.Part.objects.get_or_create(
-            assignment=lab0,
-            name='And',
-            tester=runner,
-            test_script='labs/00/And.tst',
-            extra_files='labs/00/And.cmp',
-            submit_filename='And.hdl',
-            output_file='And.out',
-            expected_result='End of script - Comparison ended successfully',
-            weight=10,
+            order=1,
         )
 
         orm.Part.objects.get_or_create(
@@ -49,30 +38,7 @@ class Migration(DataMigration):
             output_file='Mux8Way16.out',
             expected_result='End of script - Comparison ended successfully',
             weight=10,
-        )
-
-        orm.Part.objects.get_or_create(
-            assignment=lab0,
-            name='RAM8',
-            tester=runner,
-            test_script='labs/00/RAM8.tst',
-            extra_files='labs/00/RAM8.cmp',
-            submit_filename='RAM8.hdl',
-            output_file='RAM8.out',
-            expected_result='End of script - Comparison ended successfully',
-            weight=10,
-        )
-
-        orm.Part.objects.get_or_create(
-            assignment=lab0,
-            name='Xor',
-            tester=runner,
-            test_script='labs/00/Xor.tst',
-            extra_files='labs/00/Xor.cmp',
-            submit_filename='Xor.hdl',
-            output_file='Xor.out',
-            expected_result='End of script - Comparison ended successfully',
-            weight=10,
+            order=2,
         )
 
         orm.Part.objects.get_or_create(
@@ -85,6 +51,224 @@ class Migration(DataMigration):
             output_file='Register.out',
             expected_result='End of script - Comparison ended successfully',
             weight=10,
+            order=3,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab0,
+            name='RAM8',
+            tester=runner,
+            test_script='labs/00/RAM8.tst',
+            extra_files='labs/00/RAM8.cmp',
+            submit_filename='RAM8.hdl',
+            output_file='RAM8.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=4,
+        )
+
+        ######################################################################
+        # LAB 1
+        #########################################################################
+        lab1, v = orm.Assignment.objects.get_or_create(
+            description='Lab 1',
+            due_date=datetime.date(2015, 1, 28),
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='And',
+            tester=runner,
+            test_script='labs/01/And.tst',
+            extra_files='labs/01/And.cmp',
+            submit_filename='And.hdl',
+            output_file='And.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=2,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='And16',
+            tester=runner,
+            test_script='labs/01/And16.tst',
+            extra_files='labs/01/And16.cmp',
+            submit_filename='And16.hdl',
+            output_file='And16.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=8,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='DMux',
+            tester=runner,
+            test_script='labs/01/DMux.tst',
+            extra_files='labs/01/DMux.cmp',
+            submit_filename='DMux.hdl',
+            output_file='DMux.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=6,
+        )
+
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='DMux4Way',
+            tester=runner,
+            test_script='labs/01/DMux4Way.tst',
+            extra_files='labs/01/DMux4Way.cmp',
+            submit_filename='DMux4Way.hdl',
+            output_file='DMux4Way.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=14,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='DMux8Way',
+            tester=runner,
+            test_script='labs/01/DMux8Way.tst',
+            extra_files='labs/01/DMux8Way.cmp',
+            submit_filename='DMux8Way.hdl',
+            output_file='DMux8Way.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=15
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='Mux',
+            tester=runner,
+            test_script='labs/01/Mux.tst',
+            extra_files='labs/01/Mux.cmp',
+            submit_filename='Mux.hdl',
+            output_file='Mux.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=5,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='Mux4Way16',
+            tester=runner,
+            test_script='labs/01/Mux4Way16.tst',
+            extra_files='labs/01/Mux4Way16.cmp',
+            submit_filename='Mux4Way16.hdl',
+            output_file='Mux4Way16.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=12,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='Mux8Way16',
+            tester=runner,
+            test_script='labs/01/Mux8Way16.tst',
+            extra_files='labs/01/Mux8Way16.cmp',
+            submit_filename='Mux8Way16.hdl',
+            output_file='Mux8Way16.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=13,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='Mux16',
+            tester=runner,
+            test_script='labs/01/Mux16.tst',
+            extra_files='labs/01/Mux16.cmp',
+            submit_filename='Mux16.hdl',
+            output_file='Mux16.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=10,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='Not',
+            tester=runner,
+            test_script='labs/01/Not.tst',
+            extra_files='labs/01/Not.cmp',
+            submit_filename='Not.hdl',
+            output_file='Not.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=1,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='Not16',
+            tester=runner,
+            test_script='labs/01/Not16.tst',
+            extra_files='labs/01/Not16.cmp',
+            submit_filename='Not16.hdl',
+            output_file='Not16.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=7,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='Or',
+            tester=runner,
+            test_script='labs/01/Or.tst',
+            extra_files='labs/01/Or.cmp',
+            submit_filename='Or.hdl',
+            output_file='Or.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=3,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='Or8Way',
+            tester=runner,
+            test_script='labs/01/Or8Way.tst',
+            extra_files='labs/01/Or8Way.cmp',
+            submit_filename='Or8Way.hdl',
+            output_file='Or8Way.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=11,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='Or16',
+            tester=runner,
+            test_script='labs/01/Or16.tst',
+            extra_files='labs/01/Or16.cmp',
+            submit_filename='Or16.hdl',
+            output_file='Or16.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=9,
+        )
+
+        orm.Part.objects.get_or_create(
+            assignment=lab1,
+            name='Xor',
+            tester=runner,
+            test_script='labs/01/Xor.tst',
+            extra_files='labs/01/Xor.cmp',
+            submit_filename='Xor.hdl',
+            output_file='Xor.out',
+            expected_result='End of script - Comparison ended successfully',
+            weight=10,
+            order=4,
         )
 
 
@@ -95,6 +279,8 @@ class Migration(DataMigration):
 
     def backwards(self, orm):
         "Write your backwards methods here."
+
+
 
     models = {
         u'auth.group': {
@@ -153,6 +339,7 @@ class Migration(DataMigration):
             'extra_files': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
+            'order': ('django.db.models.fields.IntegerField', [], {}),
             'output_file': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
             'submit_filename': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
             'test_script': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
