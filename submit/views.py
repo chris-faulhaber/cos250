@@ -32,7 +32,7 @@ class AssignmentDetailView(generic.DetailView):
         user = self.request.user
         context = super(AssignmentDetailView, self).get_context_data(**kwargs)
         upload_form = UploadFileForm
-        parts = [part for part in Part.objects.filter(assignment=self.object)]
+        parts = [part for part in Part.objects.filter(assignment=self.object).order_by('order')]
         completed_parts = get_completed_parts(parts, user)
         incomplete_parts = [part for part in parts if part not in completed_parts]
 
@@ -44,7 +44,7 @@ class AssignmentDetailView(generic.DetailView):
 
         context['incomplete_parts'] = [model_to_dict(part) for part in incomplete_parts]
 
-        upload_form.base_fields['part'].queryset = Part.objects.filter(assignment=self.object)
+        upload_form.base_fields['part'].queryset = Part.objects.filter(assignment=self.object).order_by('order')
 
         return context
 
@@ -166,15 +166,15 @@ def upload(request):
 
             submit.save()
 
-        count = 0
-        for one_line in content:
-            line = Line()
-            line.line_number = count
-            stripped = one_line.rstrip()
-            line.line = stripped
-            line.submission = submit
-            line.save()
-            count += 1
+            count = 0
+            for one_line in content:
+                line = Line()
+                line.line_number = count
+                stripped = one_line.rstrip()
+                line.line = stripped
+                line.submission = submit
+                line.save()
+                count += 1
 
         return render_to_response(
             'submit/success.html',
