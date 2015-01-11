@@ -1,19 +1,61 @@
-<h1>{{ submission.part.assignment.description }} / {{ submission.part.name }}</h1>
-<p>Date of submission: {{ submission.submission_date }}</p>
-<p>Date of due: {{ submission.part.assignment.due_date }}</p>
+{% extends 'submit/includes/base.html' %}
+{% block content %}
+   <body>
+    {% if errors %}
+        <p>{{ errors }}</p>
+    {% endif %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <strong>{{ message }}</strong>
+                </div>
+            {% endfor %}
+        </ul>
+    {% endif %}
 
-<p>Points: {{ submission.awarded_points }} of {{ submission.part.weight }}</p>
-<p>Your results: <br>
-    {{ submission.test_results }}</p>
-<p>Expected results: <br>
-    {{ submission.part.expected_result }}</p>
-Input<br>
-<hr/>
-<pre><code class="language-c">
-{% for line in lines %}{{ line }}
-{% endfor  %}
-</code></pre>
-Output
-<hr/>
-<pre><code class="language-c">{{ submission.output }}</code></pre>
-<hr/>
+    <div class="row">
+        <div class="col-md-8" style="width:100%">
+        <ul class="list-group">
+            <h1><a href="{% url 'assignment_detail' submission.part.assignment.id %}">{{ submission.part.assignment.description }}</a> - {{ submission.part.name }}</h1>
+            <li class="list-group-item">
+                <table style="width:100%">
+                  <tr>
+                    <td>Date of due:</td>
+                    <td>{{ submission.part.assignment.due_date }}</td>
+                  </tr>
+                  <tr>
+                    <td>Date of submission</td>
+                    <td>{{ submission.submission_date }}</td>
+                  </tr>
+                  </tr>
+                    <tr><td><br/></td></tr>
+                  <tr>
+                  <tr>
+                    <td>Points Awarded:</td>
+                    <td><b>{{ submission.awarded_points }}</b> of {{ submission.part.weight }}</td>
+                  </tr>
+                  <tr><td><br/></td></tr>
+                  <tr>
+                    <td><b>Your Results</b></td>
+                    <td><b>Expected Results</b></td>
+                  </tr>
+                  <tr>
+                    <td>{{ submission.test_results }}</td>
+                    <td>{{ submission.part.expected_result }}</td>
+                  </tr>
+                </table>
+            </li>
+            <li class="list-group-item">
+                Input<br>
+                <pre><code class="language-c">{% for line in lines %}{{ line }}
+{% endfor  %}</code></pre></li>
+            <li class="list-group-item">
+                Output<br>
+                <pre><code class="language-c">{{ submission.output }}</code></pre></li>
+        </ul>
+        </div>
+    </div>
+{% endblock %}

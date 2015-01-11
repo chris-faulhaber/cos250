@@ -2,24 +2,24 @@ from datetime import datetime
 import os
 import subprocess
 import uuid
-from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.forms import model_to_dict, ModelChoiceField
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.forms import model_to_dict
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, render_to_response, redirect
-from django.views.generic import View, ListView
+from django.utils.decorators import method_decorator
+from django.views.generic import View
 import shutil
-from models import Submission, Assignment, Line, Part, AssignmentGrade
+from models import Submission, Assignment, Line, Part
 from django.template import RequestContext
 from forms import UploadFileForm, LoginForm
 from django.views import generic
 from nand2tetris import settings
 
 
-def get_completed_parts(parts, user):
+def _get_completed_parts(parts, user):
     completed_parts = []
     for part in parts:
             if part.submission_set.all().filter(owner=user).exists():
@@ -27,7 +27,13 @@ def get_completed_parts(parts, user):
     return completed_parts
 
 
-class AssignmentDetailView(generic.DetailView):
+class LoginRequiredMixin(object):
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(*args, **kwargs)
+
+
+class AssignmentDetailView(LoginRequiredMixin, generic.DetailView):
     model = Assignment
 
     def get_context_data(self, **kwargs):
@@ -37,7 +43,7 @@ class AssignmentDetailView(generic.DetailView):
         parts = [part for part in Part.objects.filter(assignment=self.object).order_by('order')]
         all_points = [part.weight for part in parts]
         total_points_possible = sum(all_points)
-        completed_parts = get_completed_parts(parts, user)
+        completed_parts = _get_completed_parts(parts, user)
         incomplete_parts = [part for part in parts if part not in completed_parts]
         submission_points_list = []
 
@@ -55,30 +61,13 @@ class AssignmentDetailView(generic.DetailView):
 
         return context
 
-    #todo do we need?
-    # @method_decorator(login_required)
-    # def dispatch(self, *args, **kwargs):
-    #     return super(AssignmentDetailView, self).dispatch(*args, **kwargs)
 
-
-class AssignmentListView(generic.ListView):
+class AssignmentListView(LoginRequiredMixin, generic.ListView):
     model = Assignment
 
 
-class SubmissionListView(generic.ListView):
-    template_name = 'submit/submission_list.html'
-    model = Submission
-
-    def get_context_data(self, **kwargs):
-        context = super(SubmissionListView, self).get_context_data(**kwargs)
-        return context
-
-    def get_queryset(self):
-        return Submission.objects.filter(owner=self.request.user).order_by('submission_date')
-
-
 # Create your views here.
-class SubmissionDetailView(generic.DetailView):
+class SubmissionDetailView(LoginRequiredMixin, generic.DetailView):
     model = Submission
 
     def get_context_data(self, **kwargs):
@@ -89,15 +78,6 @@ class SubmissionDetailView(generic.DetailView):
 
     def get_queryset(self):
         return Submission.objects.filter(owner=self.request.user)
-
-@login_required
-def index(request):
-    person_list = User.objects.all()
-    context = RequestContext(request, {
-        'personList': person_list
-    })
-
-    return render(request, 'submit/index.html', context)
 
 
 def _submit_part(part, content):
@@ -203,7 +183,7 @@ class LoginView(View):
 
     def get(self, request):
         if request.user.is_authenticated():
-            return upload(request)
+            return redirect(reverse('assignment_list'))
         form = LoginForm()
         context = RequestContext(request, {'auth_form': form})
         return render(request, self.template, context)
