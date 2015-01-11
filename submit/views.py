@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 import subprocess
 import uuid
+from django.contrib import messages
 from django.contrib.auth import logout, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -109,7 +110,7 @@ def _submit_part(part, content):
     stderr = process.stderr.read()
 
     while process.returncode is None:
-        process.communicate()
+        process.poll()
 
     #retreive output
     if part.output_file:
@@ -135,38 +136,43 @@ def upload(request):
     # Handle file upload
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            part = Part.objects.get(pk=request.POST['part'])
+        if not form.is_valid():
+            field_error = form.errors.keys()[0]
+            error_msg = str(form.errors[field_error][0])
+            error_msg = "{0}: {1}".format(field_error, error_msg)
+            messages.error(request, error_msg)
+            return redirect(request.META['HTTP_REFERER'])
+        part = Part.objects.get(pk=request.POST['part'])
 
-            submit = Submission()
-            submit.owner = request.user
-            submit.submission_date = datetime.now()
-            submit.part = part
+        submit = Submission()
+        submit.owner = request.user
+        submit.submission_date = datetime.now()
+        submit.part = part
 
-            uploaded_file = request.FILES['docfile']
-            content = uploaded_file.readlines()
+        uploaded_file = request.FILES['docfile']
+        content = uploaded_file.readlines()
 
-            submit.test_results, submit.output = _submit_part(part, content)
-            if submit.test_results == submit.part.expected_result:
-                submit.awarded_points = submit.part.weight
-            else:
-                submit.awarded_points = 0
+        submit.test_results, submit.output = _submit_part(part, content)
+        if submit.test_results == submit.part.expected_result:
+            submit.awarded_points = submit.part.weight
+        else:
+            submit.awarded_points = 0
 
-            submit.save()
+        submit.save()
 
-            count = 0
-            for one_line in content:
-                line = Line()
-                line.line_number = count
-                stripped = one_line.rstrip()
-                line.line = stripped
-                line.submission = submit
-                line.save()
-                count += 1
+        count = 0
+        for one_line in content:
+            line = Line()
+            line.line_number = count
+            stripped = one_line.rstrip()
+            line.line = stripped
+            line.submission = submit
+            line.save()
+            count += 1
 
-            return HttpResponseRedirect(
-                reverse('submission', args=(submit.id,))
-            )
+        return HttpResponseRedirect(
+            reverse('submission', args=(submit.id,))
+        )
 
     form.submissions = Submission.objects.filter(owner=request.user).order_by('-submission_date')[:5]
 
