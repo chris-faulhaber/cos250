@@ -15,7 +15,6 @@
             {% endfor %}
         </ul>
     {% endif %}
-    <!-- Upload form. Note enctype attribute! -->
     <div class="row">
         <div class="col-md-8">
             <h1>Parts Remaining</h1>
@@ -52,7 +51,7 @@
             <h1 align="center">{{ object.description }}</h1>
             <h2>Current Score: {{ current_assignment_score }}%</h2>
             <br>
-
+    <!-- Upload form. Note enctype attribute! -->
             <form action="{% url 'upload' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {% load crispy_forms_tags %}
