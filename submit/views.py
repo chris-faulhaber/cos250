@@ -237,3 +237,12 @@ class StudentGradeView(generic.View):
 
         context = RequestContext(request, {'grades': grades, 'student': model_to_dict(user)})
         return HttpResponse(render(request, self.template_name, context))
+
+
+class AssignmentGradesView(View):
+    template_name = 'submit/assignment_grades.html'
+
+    def get(self, request):
+        # TODO: Need to add JWT authentication
+        context = RequestContext(request, {})
+        return  HttpResponse(render(request, self.template_name, context))
