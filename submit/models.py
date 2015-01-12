@@ -51,9 +51,10 @@ class Submission(models.Model):
         super(Submission, self).save(*args, **kwargs)
 
         try:
-            part_grade = self.part.partgrade_set.all().filter(user=self.owner)[0]
-            part_grade.get_current_score()
-            part_grade.save()
+            part_grade = self.part.partgrade_set.all().filter(user=self.owner).order_by('-current_score')[0]
+            if self.awarded_points > part_grade.current_score:
+                part_grade.get_current_score()
+                part_grade.save()
         except IndexError:
             part_grade = PartGrade()
             part_grade.user = self.owner
@@ -91,7 +92,7 @@ class PartGrade(models.Model):
         return "{0}".format(self.current_score)
 
     def get_current_score(self):
-        submission = Submission.objects.filter(part=self, owner=self.user).order_by('-awarded_points')[0]
+        submission = Submission.objects.filter(part=self.part, owner=self.user).order_by('-awarded_points')[0]
         current_score = submission.awarded_points
         self.current_score = current_score
         return self.current_score

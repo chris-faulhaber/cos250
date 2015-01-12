@@ -31,29 +31,6 @@ class PartGradeAdmin(ImportExportModelAdmin):
     def get_assignment(self, obj):
         return obj.part.assignment.description
 
-    def get_queryset(self, request):
-        height_scoring_parts = []
-        parts = Part.objects.all()
-        users = User.objects.exclude(is_superuser=True)
-        for user in users:
-            for part in parts:
-                try:
-                    submission = Submission.objects.filter(part=part, owner=user).order_by('-awarded_points')[0]
-                    height_scoring_parts.append(submission.part)
-                except IndexError:
-                    pass
-        part_grades = self.model.objects.filter(part__in=height_scoring_parts)
-
-        heighest_part_grade_ids = []
-        for part in parts:
-            for user in users:
-                try:
-                    part = part_grades.filter(part=part, user=user).order_by('-current_score')[0]
-                    heighest_part_grade_ids.append(part.id)
-                except IndexError:
-                    pass
-        return PartGrade.objects.filter(id__in=heighest_part_grade_ids)
-
     get_assignment.short_description = 'Assignment Name'
     get_user.short_description = 'Student Name'
 
