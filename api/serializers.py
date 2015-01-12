@@ -16,7 +16,6 @@ class AssignmentSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name')
 
 
 class PartSerializer(serializers.ModelSerializer):
@@ -29,6 +28,7 @@ class PartSerializer(serializers.ModelSerializer):
 
 class AssignmentGradeSerializer(serializers.ModelSerializer):
     user = UserSerializer()
+    assignment = AssignmentSerializer()
 
     class Meta:
         model = AssignmentGrade

@@ -49,6 +49,7 @@
                 {% if user.is_authenticated %}
                     {% if user.is_superuser %}
                         <li><a href="{% url 'student_list' %}">Students</a></li>
+                        <li><a href="{% url 'assignment_grades_list' %}">Assignment Grades</a></li>
                     {% endif %}
                 {% endif %}
             </ul>

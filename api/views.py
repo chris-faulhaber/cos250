@@ -1,4 +1,5 @@
 import logging
+from django.forms import model_to_dict
 
 from django.http import Http404
 from rest_framework.views import APIView

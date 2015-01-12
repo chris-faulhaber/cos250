@@ -10,6 +10,7 @@ var Assignments = require('../collections/assignments');
 
 //regions
 var AssignmentRegion = require('../regions/assignmentsRegion');
+var AssignmentGradeRegion = require('../regions/assignmentGradeRegion');
 
 //Rivets
 var create_custom_rivets_formatters = require('../../common_js/utils/create_custom_rivets_formatters');
@@ -41,6 +42,10 @@ AssignmentApp.addRegions({
     AssignmentRegion: {
         el: '#assignments',
         regionClass: AssignmentRegion
+    },
+    AssignmentGradesRegion: {
+        el: '#assignmentGrades',
+        regionClass: AssignmentGradeRegion
     }
 });
 

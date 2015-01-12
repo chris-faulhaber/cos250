@@ -51,7 +51,7 @@ class Submission(models.Model):
         super(Submission, self).save(*args, **kwargs)
 
         try:
-            part_grade = self.part.partgrade_set.all()[0]
+            part_grade = self.part.partgrade_set.all().filter(user=self.owner)[0]
             part_grade.get_current_score()
             part_grade.save()
         except IndexError:
@@ -62,7 +62,7 @@ class Submission(models.Model):
             part_grade.save()
 
         try:
-            assignment_grade = AssignmentGrade.objects.get(assignment=self.part.assignment)
+            assignment_grade = AssignmentGrade.objects.get(assignment=self.part.assignment, user=self.owner)
             assignment_grade.get_grade()
             assignment_grade.save()
         except AssignmentGrade.DoesNotExist:
