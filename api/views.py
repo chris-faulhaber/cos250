@@ -1,13 +1,9 @@
 import logging
-from django.forms import model_to_dict
-
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import authentication, permissions
-
-from submit.models import AssignmentGrade, Assignment
 
 log = logging.getLogger(__name__)
 
@@ -16,6 +12,8 @@ from serializers import *
 
 class AssignmentGradeView(APIView):
     serializer_class = AssignmentGradeSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (authentication.TokenAuthentication,)
 
     def get_object(self, id):
         try:

@@ -27,6 +27,7 @@ function csrfSafeMethod(method) {
 module.exports = function() {
     $.ajaxSetup({
         beforeSend: function (xhr, settings) {
+            xhr.setRequestHeader("AUTHORIZATION", 'Token ' +  window.data['jwt']);
             if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }

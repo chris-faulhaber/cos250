@@ -13,6 +13,7 @@ from django.shortcuts import render, render_to_response, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 import shutil
+from rest_framework_jwt.utils import jwt_encode_handler
 from models import Submission, Assignment, Line, Part
 from django.template import RequestContext
 from forms import UploadFileForm, LoginForm
@@ -243,6 +244,7 @@ class AssignmentGradesView(View):
     template_name = 'submit/assignment_grades.html'
 
     def get(self, request):
-        # TODO: Need to add JWT authentication
-        context = RequestContext(request, {})
+        jwt_payload = {'username': request.user.username, 'password': request.user.password}
+        jwt = jwt_encode_handler(jwt_payload)
+        context = RequestContext(request, {'jwt': jwt})
         return  HttpResponse(render(request, self.template_name, context))
