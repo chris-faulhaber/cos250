@@ -91,7 +91,7 @@ class PartGrade(models.Model):
         return "{0}".format(self.current_score)
 
     def get_current_score(self):
-        submission = Submission.objects.filter(part=self, owner=self.user).order_by('-awarded_points')[0]
+        submission = Submission.objects.filter(part=self.part, owner=self.user).order_by('-awarded_points')[0]
         current_score = submission.awarded_points
         self.current_score = current_score
         return self.current_score
