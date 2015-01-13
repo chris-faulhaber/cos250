@@ -20,9 +20,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '#9so#9v$eb5^f0_#drlwdarg$3lkquzxwia=1pek$((bf1%^34'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-TEMPLATE_DEBUG = False
+TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '104.131.109.166']
 
@@ -38,7 +38,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'south',
     'submit',
+    'rest_framework',
     'crispy_forms',
+    'import_export'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -83,7 +85,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = '/home/django/django/static/'
+STATIC_ROOT = '/Users/gbartlett/cos250/cos250/submit/static'
+
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
@@ -94,6 +98,18 @@ LOGIN_URL = '/'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 RESOURCES_DIR = os.path.join(BASE_DIR,  'resources')
+
+# DRF and DRF-JWT Settings
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    ),
+}
 
 try:
     from local_settings import *
