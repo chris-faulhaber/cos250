@@ -16,7 +16,7 @@
                 </tr>
                 <tr>
                     {% for part in grade.parts %}
-                        <td>{{ part.score }}</td>
+                        <td><h1>{{ part.awarded }}</h1> of {{ part.possible }}</td>
                     {% endfor %}
                 </tr>
             </table>

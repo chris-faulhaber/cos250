@@ -1,0 +1,21 @@
+{% extends 'submit/includes/base.html' %}
+{% block customJS %}
+    {% load static %}
+ <script src="{% static "js/build/assignment.js" %}"></script>
+{% endblock %}
+{% block content %}
+    <script>
+        window.data = {"jwt": "{{ jwt|safe }}" };
+    </script>
+    <h1 align="center">Assignments</h1>
+    <h4 align="center">Click an assignment to see student grades</h4>
+    <br>
+    <div class="row">
+        <div class="col-xs-6 col-md-4">
+            <div id="assignments"></div>
+        </div>
+        <div class="col-xs-12 col-md-8" id="assignmentGrades">
+
+        </div>
+    </div>
+{% endblock %}

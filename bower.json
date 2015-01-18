@@ -16,6 +16,15 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.1"
+    "backbone": "~1.1.2",
+    "backbone-relational": "~0.8.8",
+    "backbone.babysitter": "latest",
+    "backbone.radio": "latest",
+    "lodash": "latest",
+    "rivets": "latest",
+    "rivets-backbone-adapter": "latest",
+    "bootstrap": "~3.3.1",
+    "backbone.marionette": "latest",
+    "q": "~1.0.1"
   }
 }

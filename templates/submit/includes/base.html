@@ -20,6 +20,7 @@
 
     <script src="{% static "bower_components/jquery/dist/jquery.min.js" %}"></script>
     <script src="{% static "bower_components/bootstrap/dist/js/bootstrap.min.js" %}"></script>
+    {% block customJS %}{% endblock %}
 
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -48,6 +49,7 @@
                 {% if user.is_authenticated %}
                     {% if user.is_superuser %}
                         <li><a href="{% url 'student_list' %}">Students</a></li>
+                        <li><a href="{% url 'assignment_grades_list' %}">Assignment Grades</a></li>
                     {% endif %}
                 {% endif %}
             </ul>

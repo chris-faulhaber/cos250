@@ -13,6 +13,7 @@ from django.shortcuts import render, render_to_response, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 import shutil
+from rest_framework_jwt.utils import jwt_encode_handler
 from models import Submission, Assignment, Line, Part
 from django.template import RequestContext
 from forms import UploadFileForm, LoginForm
@@ -222,18 +223,28 @@ class StudentListView(generic.ListView):
     queryset = User.objects.filter(is_staff=False)
 
 
-class StudentGradeView(generic.View):
+class StudentDetailView(generic.View):
     template_name = 'submit/grade_view.html'
 
     def get(self, request, pk):
         user = User.objects.get(id=pk)
         assignments = Assignment.objects.all()
         grades = []
+
         for assignment in assignments:
-            for assignment_grade in assignment.assignmentgrade_set.filter(user=user):
-                grade, part_grades = assignment_grade.get_grade()
-                grade_dict = {'grade': grade, 'assignment': assignment.description, 'parts': part_grades}
-                grades.append(grade_dict)
+            grade_dict = {'grade': assignment.grade(user), 'assignment': assignment.description,
+                          'parts': assignment.part_grades(user)}
+            grades.append(grade_dict)
 
         context = RequestContext(request, {'grades': grades, 'student': model_to_dict(user)})
         return HttpResponse(render(request, self.template_name, context))
+
+
+class AssignmentGradesView(View):
+    template_name = 'submit/assignment_grades.html'
+
+    def get(self, request):
+        jwt_payload = {'username': request.user.username, 'password': request.user.password}
+        jwt = jwt_encode_handler(jwt_payload)
+        context = RequestContext(request, {'jwt': jwt})
+        return  HttpResponse(render(request, self.template_name, context))

@@ -1,4 +1,8 @@
 .elasticbeanstalk/
 .idea
 submit/static/bower_components
-local_settings.py
+nand2tetris/local_settings.py
+package.json
+node_modules/*
+gulp/logs/*
+.codeintel
