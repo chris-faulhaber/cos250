@@ -42,6 +42,7 @@ class Assignment(models.Model):
 
         return grades
 
+
 class TestRunner(models.Model):
     script = models.CharField(max_length=1024)
 
