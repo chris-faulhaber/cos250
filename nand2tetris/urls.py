@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 
 from django.contrib import admin
-from submit.views import SubmissionDetailView, LoginView, StudentGradeView, StudentListView
+from submit.views import SubmissionDetailView, LoginView, StudentListView, StudentDetailView
 from submit.views import AssignmentDetailView, AssignmentListView, AssignmentGradesView
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -20,5 +20,5 @@ urlpatterns = patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include('api.urls')),
     url(r'^students/$', staff_member_required(StudentListView.as_view()), name='student_list'),
-    url(r'^student/grades/(?P<pk>[-_\w]+)/$', staff_member_required(StudentGradeView.as_view()), name='student_grade'),
+    url(r'^student/grades/(?P<pk>[-_\w]+)/$', staff_member_required(StudentDetailView.as_view()), name='student_grade'),
 )
