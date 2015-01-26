@@ -23,6 +23,7 @@
             <table class="table table-hover table-striped">
                 <tr>
                     <th>Assignment</th>
+                    <th>Grade</th>
                     <th>Due Date</th>
                 </tr>
                 <tbody>
@@ -32,7 +33,10 @@
                             <a href="{% url 'assignment_detail' assignment.id %}">{{ assignment.description }}</a>
                         </td>
                         <td>
-                            <a href="{% url 'assignment_detail' assignment.id %}">{{ assignment.due_date }}</a>
+                            {{ assignment.the_grade }}
+                        </td>
+                        <td>
+                            {{ assignment.due_date }}
                         </td>
                     </tr>
                     {% endfor %}

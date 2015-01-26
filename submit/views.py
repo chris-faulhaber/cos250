@@ -67,6 +67,20 @@ class AssignmentDetailView(LoginRequiredMixin, generic.DetailView):
 class AssignmentListView(LoginRequiredMixin, generic.ListView):
     model = Assignment
 
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(AssignmentListView, self).get_context_data(**kwargs)
+
+        # Add in the grade
+        for assignment in context['assignment_list']:
+            grade = assignment.grade(user=self.request.user)
+            if grade > 0:
+                assignment.the_grade = "%02.02f%%" % grade
+            else:
+                assignment.the_grade = ''
+
+        return context
+
 
 # Create your views here.
 class SubmissionDetailView(LoginRequiredMixin, generic.DetailView):
