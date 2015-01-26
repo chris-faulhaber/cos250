@@ -27,7 +27,7 @@ class UploadFileForm(forms.Form):
         if docfile.size > 10000:
             raise forms.ValidationError('File too large.')
 
-        return True & super(UploadFileForm, self).is_valid()
+        return self.is_bound and not bool(self.errors)
 
 
 class LoginForm(AuthenticationForm):
