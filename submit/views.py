@@ -96,6 +96,21 @@ class SubmissionDetailView(LoginRequiredMixin, generic.DetailView):
         return Submission.objects.filter(owner=self.request.user)
 
 
+ # Create your views here.
+class StaffSubmissionDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Submission
+    template = 'submit/submission_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StaffSubmissionDetailView, self).get_context_data(**kwargs)
+        context['lines'] = Line.objects.filter(submission=context['submission']).order_by('line_number')
+
+        return context
+
+    def get_queryset(self):
+        return Submission.objects.filter(pk=self.kwargs['pk'])
+
+
 def _submit_part(part, content):
     temp_dir = '/tmp/{0}'.format(uuid.uuid4().hex)
     script = os.path.join(settings.RESOURCES_DIR, part.tester.script)
@@ -173,6 +188,9 @@ def upload(request):
         else:
             submit.awarded_points = 0
 
+        submit.output = submit.output[:4000] + ' ... TRUNCATED ... ' \
+            if len(submit.output) > 4096 else submit.output
+
         submit.save()
 
         count = 0
@@ -237,16 +255,42 @@ class StudentListView(generic.ListView):
     queryset = User.objects.filter(is_staff=False)
 
 
+class StudentAssignmentView(generic.View):
+    template_name = 'submit/assignment_submissions_list.html'
+
+    def get(self, request, user_pk, part_pk=None):
+        user = User.objects.get(id=user_pk)
+
+        if part_pk:
+            part = Part.objects.get(id=part_pk)
+            submissions = Submission.objects.filter(owner=user, part=part).order_by('-submission_date')
+        else:
+            submissions = Submission.objects.filter(owner=user).order_by('-submission_date')
+
+        submits = []
+        for submit in submissions:
+            submits.append({'pk': submit.pk, 'awarded_points': submit.awarded_points,
+                            'name': submit.part.name,
+                            'submission_date': submit.submission_date})
+
+        if len(submissions) > 0:
+            context = RequestContext(request, {'submissions': submits})
+            return HttpResponse(render(request, self.template_name, context))
+        else:
+            #TODO something here, return to prior page or show error...
+            pass
+
+
 class StudentDetailView(generic.View):
     template_name = 'submit/grade_view.html'
 
-    def get(self, request, pk):
-        user = User.objects.get(id=pk)
+    def get(self, request, user_pk):
+        user = User.objects.get(id=user_pk)
         assignments = Assignment.objects.all()
         grades = []
 
         for assignment in assignments:
-            grade_dict = {'grade': assignment.grade(user), 'assignment': assignment.description,
+            grade_dict = {'grade': assignment.grade(user), 'assignment': model_to_dict(assignment),
                           'parts': assignment.part_grades(user)}
             grades.append(grade_dict)
 
