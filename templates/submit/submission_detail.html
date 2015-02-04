@@ -1,4 +1,5 @@
 {% extends 'submit/includes/base.html' %}
+{% load l10n %}
 {% block content %}
    <body>
     {% if errors %}
@@ -24,11 +25,11 @@
                 <table style="width:100%">
                   <tr>
                     <td>Date of due:</td>
-                    <td>{{ submission.part.assignment.due_date }}</td>
+                    <td>{{ submission.part.assignment.due_date|localize }}</td>
                   </tr>
                   <tr>
                     <td>Date of submission</td>
-                    <td>{{ submission.submission_date }}</td>
+                    <td>{{ submission.submission_date|localize }}</td>
                   </tr>
                   </tr>
                     <tr><td><br/></td></tr>

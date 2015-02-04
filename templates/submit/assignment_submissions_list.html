@@ -1,0 +1,35 @@
+{% extends 'submit/includes/base.html' %}
+{% load l10n %}
+{% block content %}
+   <body>
+    {% if errors %}
+        <p>{{ errors }}</p>
+    {% endif %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <strong>{{ message }}</strong>
+                </div>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-8" style="width:100%">
+        <ul class="list-group">
+           <table class="table table-bordered">
+                <tr><td>Part</td><td>Points Awarded</td><td>Date</td></tr>
+            {% for submit in submissions %}
+                <tr>
+                    <td><a href="{% url 'staff_submission' submit.pk %}">{{ submit.name }}</a></td>
+                    <td>{{ submit.awarded_points }}</td>
+                    <td>{{ submit.submission_date|localize }}</td>
+                </tr>
+                {% endfor %}
+        </ul>
+        </div>
+    </div>
+{% endblock %}

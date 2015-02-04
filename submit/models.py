@@ -36,7 +36,7 @@ class Assignment(models.Model):
             else:
                 awarded = 0
 
-            grade_dict = {'name': part.name, 'awarded': awarded, 'possible': part.weight}
+            grade_dict = {'pk': part.id, 'name': part.name, 'awarded': awarded, 'possible': part.weight}
 
             grades.append(grade_dict)
 

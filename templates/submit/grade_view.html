@@ -5,13 +5,13 @@
         <h2 align="center">{{ student.first_name }} {{ student.last_name }}</h2>
         <br>
         {% for grade in grades %}
-            <h1>{{ grade.assignment }}: {{ grade.grade }}%</h1>
+            <h1><a href={% url 'student_assignment_submits' user_pk=student.id %}>{{ grade.assignment.description }}</a>: {{ grade.grade }}%</h1>
             <br>
             <br>
             <table class="table table-bordered">
                 <tr>
                     {% for part in grade.parts %}
-                        <td class="info">{{ part.name }}</td>
+                        <td class="info"><a href={% url 'student_assignment_submits' user_pk=student.id part_pk=part.pk %}>{{ part.name }}</a></td>
                     {% endfor %}
                 </tr>
                 <tr>

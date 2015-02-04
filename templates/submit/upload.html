@@ -1,4 +1,5 @@
 {% extends 'submit/includes/base.html' %}
+{% load l10n %}
 {% block content %}
 <body>
 {% if errors %}
@@ -37,7 +38,7 @@
         <p>Recent submissions</p>
         {% for submit in form.submissions %}
             <li>
-                <a href="{% url 'submission' submit.id %}">{{ submit.assignment.course }}/{{ submit.assignment.description }}/{{ submit.submission_date }}</a>
+                <a href="{% url 'submission' submit.id %}">{{ submit.assignment.course }}/{{ submit.assignment.description }}/{{ submit.submission_date|localize }}</a>
             </li>
         {% endfor %}
     </ul>
