@@ -48,28 +48,30 @@ class TestRunner(models.Model):
 
 
 class Part(models.Model):
+    allow_builtin = models.BooleanField(default=False)
+    nand_only = models.BooleanField(default=False)  # TODO
     assignment = models.ForeignKey(Assignment)
-    name = models.CharField(max_length=1024)
-    tester = models.ForeignKey(TestRunner)
-    test_script = models.CharField(max_length=1024)
-    extra_files = models.CharField(max_length=1024)
-    submit_filename = models.CharField(max_length=1024)
-    output_file = models.CharField(max_length=1024)
     expected_result = models.CharField(max_length=1024)
-    weight = models.IntegerField()
+    extra_files = models.CharField(max_length=1024)
+    name = models.CharField(max_length=1024)
+    submit_filename = models.CharField(max_length=1024)
+    test_script = models.CharField(max_length=1024)
+    tester = models.ForeignKey(TestRunner)
     order = models.IntegerField()
+    output_file = models.CharField(max_length=1024)
+    weight = models.IntegerField()
 
     def __unicode__(self):
         return self.name
 
 
 class Submission(models.Model):
-    owner = models.ForeignKey(User)
-    submission_date = models.DateTimeField()
-    part = models.ForeignKey(Part)
-    test_results = models.CharField(max_length=1024, null=True, blank=True)
     awarded_points = models.IntegerField()
-    output = models.CharField(max_length=4096)
+    owner = models.ForeignKey(User)
+    output = models.CharField(max_length=4096, null=True, blank=True)
+    part = models.ForeignKey(Part)
+    submission_date = models.DateTimeField()
+    test_results = models.CharField(max_length=1024, null=True, blank=True)
 
     def __unicode__(self):
         if self.test_results.rstrip() == self.part.expected_result:
@@ -101,6 +103,7 @@ class Line(models.Model):
     submission = models.ForeignKey(Submission)
     line_number = models.IntegerField()
     line = models.CharField(max_length=1024)
+    truncated = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.line

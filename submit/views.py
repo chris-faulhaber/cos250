@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.forms import model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 import shutil
@@ -178,10 +178,44 @@ def upload(request):
         submit.owner = request.user
         submit.submission_date = datetime.now()
         submit.part = part
+        submit.awarded_points = 0  # initially
+
+        submit.save()
 
         uploaded_file = request.FILES['docfile']
         content = uploaded_file.readlines()
 
+        count = 0
+        found_parts = False
+        for one_line in content:
+            line = Line()
+
+            if not part.allow_builtin and 'BUILTIN' in one_line:
+                error_msg = "The usage of 'BUILTIN' is not allowed. Line {0}".format(count+1)
+                messages.error(request, error_msg)
+                return redirect(request.META['HTTP_REFERER'])
+
+            if part.nand_only and found_parts and '(' in one_line and not 'Nand' in one_line:
+                error_msg = "You may use only Nand's. Line {0}".format(count+1)
+                messages.error(request, error_msg)
+                return redirect(request.META['HTTP_REFERER'])
+
+            if 'PARTS:' in one_line:
+                found_parts = True
+
+            # note the truncation and let's try to submit...
+            if len(one_line) > 1024:
+                line.truncated = True
+                one_line = one_line[:1024]
+
+            line.line_number = count
+            stripped = one_line.rstrip()  # remove line ends
+            line.line = stripped
+            line.submission = submit
+            line.save()
+            count += 1
+
+        # Ok we are ready to test.
         submit.test_results, submit.output = _submit_part(part, content)
         if submit.test_results == submit.part.expected_result:
             submit.awarded_points = submit.part.weight
@@ -191,30 +225,16 @@ def upload(request):
         submit.output = submit.output[:4000] + ' ... TRUNCATED ... ' \
             if len(submit.output) > 4096 else submit.output
 
-        submit.save()
+        submit.test_results = submit.test_results[:1000] + ' ... TRUNCATED ... ' \
+            if len(submit.test_results) > 1024 else submit.test_results
 
-        count = 0
-        for one_line in content:
-            line = Line()
-            line.line_number = count
-            stripped = one_line.rstrip()
-            line.line = stripped
-            line.submission = submit
-            line.save()
-            count += 1
+        submit.save()
 
         return HttpResponseRedirect(
             reverse('submission', args=(submit.id,))
         )
 
-    form.submissions = Submission.objects.filter(owner=request.user).order_by('-submission_date')[:5]
-
-    # Render list page with the documents and the form
-    return render_to_response(
-        'submit/upload.html',
-        {'form': form},
-        context_instance=RequestContext(request)
-    )
+    return redirect(request.META['HTTP_REFERER'])
 
 
 class LoginView(View):
